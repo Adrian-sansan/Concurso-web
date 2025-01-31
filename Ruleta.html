@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="estilo-web.css">
+    
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index2.html"><strong>INICIO</strong></a></li>
+            <li><a href="SLOTS.html"><strong>SLOTS</strong></a></li>
+            <li><a href="Ruleta.html"><strong>RULETA</strong></a></li>
+        </ul>       
+    </nav>    
+        <div class="introduccion">
+            <h1>★ GOLDEN PALACE CASINO ★</h1>
+            <h2>Bienvenido a la experiencia definitiva</h2>
+    </div>
+        <div class="ruleta">
+            <div class="roulette-container">
+                <div id="balance">Saldo: $1000</div>
+                <div class="wheel">
+                    <div class="ball-container">
+                        <div class="ball"></div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <input type="number" id="betAmount" value="10" min="1" step="1">
+                    <button id="spinButton">Girar</button>
+                </div>
+                <div class="bet-options">
+                    <div class="bet-option" data-type="red">Rojo</div>
+                    <div class="bet-option" data-type="black">Negro</div>
+                    <div class="bet-option" data-type="even">Par</div>
+                    <div class="bet-option" data-type="odd">Impar</div>
+                </div>
+                <div class="result"></div>
+            </div>
+        
+            <script>
+                let balance = 1000;
+                let isSpinning = false;
+                let selectedBet = null;
+                let currentRotation = 0;
+                let currentBallRotation = 0;
+        
+                const wheel = document.querySelector('.wheel');
+                const ballContainer = document.querySelector('.ball-container');
+                const spinButton = document.getElementById('spinButton');
+                const betOptions = document.querySelectorAll('.bet-option');
+                const resultDiv = document.querySelector('.result');
+                const balanceDiv = document.getElementById('balance');
+                const betAmountInput = document.getElementById('betAmount');
+        
+                betOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        betOptions.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        selectedBet = option.dataset.type;
+                    });
+                });
+        
+                function updateBalance(amount) {
+                    balance += amount;
+                    balanceDiv.textContent = `Saldo: $${balance}`;
+                }
+        
+                function checkWin(number, betType) {
+                    const isRed = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(number);
+                    
+                    switch(betType) {
+                        case 'red':
+                            return isRed;
+                        case 'black':
+                            return !isRed;
+                        case 'even':
+                            return number % 2 === 0;
+                        case 'odd':
+                            return number % 2 !== 0;
+                        default:
+                            return false;
+                    }
+                }
+        
+                function spin() {
+                    if (isSpinning || !selectedBet) return;
+        
+                    const betAmount = parseInt(betAmountInput.value);
+                    if (betAmount > balance) {
+                        alert('Saldo insuficiente');
+                        return;
+                    }
+        
+                    isSpinning = true;
+                    spinButton.disabled = true;
+                    updateBalance(-betAmount);
+        
+                    // Calcular la rotación de la rueda
+                    const wheelSpins = 5 + Math.random() * 5;
+                    const number = Math.floor(Math.random() * 37);
+                    const targetDegrees = number * 10;
+                    const wheelRotation = (360 * wheelSpins) + targetDegrees;
+                    
+                    // Calcular la rotación de la bola (en dirección opuesta y más rápida)
+                    const ballSpins = wheelSpins + 2 + Math.random() * 3;
+                    const ballRotation = -(360 * ballSpins + targetDegrees);
+        
+                    // Aplicar las rotaciones
+                    wheel.style.transform = `rotate(${wheelRotation}deg)`;
+                    ballContainer.style.transform = `rotate(${ballRotation}deg)`;
+                    
+                    currentRotation = wheelRotation;
+                    currentBallRotation = ballRotation;
+        
+                    setTimeout(() => {
+                        isSpinning = false;
+                        spinButton.disabled = false;
+        
+                        const win = checkWin(number, selectedBet);
+                        if (win) {
+                            updateBalance(betAmount * 2);
+                            resultDiv.textContent = `¡Ganaste! Número: ${number}`;
+                        } else {
+                            resultDiv.textContent = `Perdiste. Número: ${number}`;
+                        }
+                    }, 3000);
+                }
+        
+                spinButton.addEventListener('click', spin);
+            </script>
+        </div>
+        <footer>
+            <p>Pon música para acompañar tu juego</p>
+            <audio controls src="Glide with me.mp3" type="audio/mp3"></audiosrc>
+        </footer>  
+</body>
+</html>
