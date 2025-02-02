@@ -243,12 +243,19 @@ footer{
         }  
 .ruleta{
 margin-top: 100px;
-margin-bottom: 110px;
+margin-bottom: 145px;
+color:#fff
 }
 .no{
    font-family:'Oswald'; 
 }
-
-
+.imagen{
+    display: flex;
+    width: 100%;
+}
+.imagen img{
+    margin-left: 420px;
+    width: 500px;
+}
 
 
