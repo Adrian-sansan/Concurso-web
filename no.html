@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Denegado</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #ffdddd;
+        }
+        .no {
+            color: red;
+            font-size: 20px;
+            margin-top: 50px;
+        }
+        img {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no">
+        <h1>⚠️ ACCESO DENEGADO ⚠️</h1>
+        <p>Lo sentimos, debes ser mayor de edad para acceder a este contenido.</p>
+        <p>Por favor, vuelve cuando tengas 18 años o más.</p>
+    </div>
+
+    <div>
+        <img src="nosepuede.jpg" width="100px" height="100px" alt="Acceso Denegado">
+        <img src="homero.gif" alt="Homero triste">
+    </div>
+
+    <button onclick="history.back()">Volver</button>
+
+</body>
+</html>

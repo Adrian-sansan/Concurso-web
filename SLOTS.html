@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="estilo-web.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #006600 ;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            color: white;
+        }
+        #global-credits {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #16213e;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .slot-machine {
+            background-color: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 50px;
+            margin-bottom: 140px;
+            width: 300px;
+            text-align: center;
+        }
+        .slot-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .slot-cell {
+            background-color: #0f3460;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            border-radius: 10px;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #e94560;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        #bet-input {
+            width: 50px;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="introduccion">
+            <h1>★ GOLDEN PALACE CASINO ★</h1>
+            <h2>Bienvenido a la experiencia definitiva</h2>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="index2.html"><strong>INICIO</strong></a></li>
+            <li><a href="SLOTS.html"><strong>SLOTS</strong></a></li>
+            <li><a href="Ruleta.html"><strong>RULETA</strong></a></li>
+        </ul>       
+    </nav>
+    <div id="global-credits">Créditos Totales: 1000</div>
+    <div id="slot-container">
+    <script>
+        let globalCredits = 1000;
+        const globalCreditsDisplay = document.getElementById('global-credits');
+
+        const slotTypes = [
+            {
+                name: 'Frutas Clásicas',
+                symbols: ['🍒', '🍇', '🍊', '🍋', '🍎', '🍈'],
+                reels: 3,
+                rows: 3
+            },
+            {
+                name: 'Tema Marino',
+                symbols: ['🐬', '🐟', '🐳', '🦈', '🐙', '🦀'],
+                reels: 3,
+                rows: 3
+            },
+            {
+                name: 'Espacio Cósmico',
+                symbols: ['🚀', '🛸', '🌍', '👽', '🌟', '☄️'],
+                reels: 3,
+                rows: 3
+            }
+        ];
+
+        function createSlotMachine(config) {
+            const machine = document.createElement('div');
+            machine.classList.add('slot-machine');
+            machine.innerHTML = `
+                <h2>${config.name}</h2>
+                <div class="controls">
+                    <div>
+                        Apuesta: 
+                        <input type="number" id="bet-${config.name}" min="1" value="10">
+                    </div>
+                </div>
+                <div class="slot-grid" id="grid-${config.name}"></div>
+                <button id="spin-${config.name}" onclick="spin('${config.name}')">GIRAR</button>
+                <div id="result-${config.name}"></div>
+            `;
+            return machine;
+        }
+
+        function initSlotMachines() {
+            const container = document.getElementById('slot-container');
+            slotTypes.forEach(config => {
+                const machine = createSlotMachine(config);
+                container.appendChild(machine);
+                
+                const grid = document.getElementById(`grid-${config.name}`);
+                for (let i = 0; i < config.reels * config.rows; i++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('slot-cell');
+                    cell.textContent = config.symbols[Math.floor(Math.random() * config.symbols.length)];
+                    grid.appendChild(cell);
+                }
+            });
+        }
+
+        function checkWinningLines(cells) {
+            const grid = [
+                [cells[0].textContent, cells[1].textContent, cells[2].textContent],
+                [cells[3].textContent, cells[4].textContent, cells[5].textContent],
+                [cells[6].textContent, cells[7].textContent, cells[8].textContent]
+            ];
+
+            // Líneas horizontales
+            if (grid[0][0] === grid[0][1] && grid[0][1] === grid[0][2]) return true;
+            if (grid[1][0] === grid[1][1] && grid[1][1] === grid[1][2]) return true;
+            if (grid[2][0] === grid[2][1] && grid[2][1] === grid[2][2]) return true;
+
+            // Líneas verticales
+            if (grid[0][0] === grid[1][0] && grid[1][0] === grid[2][0]) return true;
+            if (grid[0][1] === grid[1][1] && grid[1][1] === grid[2][1]) return true;
+            if (grid[0][2] === grid[1][2] && grid[1][2] === grid[2][2]) return true;
+
+            // Diagonales
+            if (grid[0][0] === grid[1][1] && grid[1][1] === grid[2][2]) return true;
+            if (grid[0][2] === grid[1][1] && grid[1][1] === grid[2][0]) return true;
+
+            return false;
+        }
+
+        function spin(name) {
+            const machineType = slotTypes.find(t => t.name === name);
+            const gridElement = document.getElementById(`grid-${name}`);
+            const resultDisplay = document.getElementById(`result-${name}`);
+            const spinButton = document.getElementById(`spin-${name}`);
+            const betInput = document.getElementById(`bet-${name}`);
+            
+            const betAmount = parseInt(betInput.value);
+            
+            if (globalCredits < betAmount) {
+                resultDisplay.textContent = "¡Créditos insuficientes!";
+                return;
+            }
+
+            globalCredits -= betAmount;
+            globalCreditsDisplay.textContent = `Créditos Totales: ${globalCredits}`;
+            spinButton.disabled = true;
+            resultDisplay.textContent = "";
+            
+            const cells = gridElement.children;
+            const spinPromises = Array.from(cells).map(cell => {
+                return new Promise(resolve => {
+                    const spins = Array(10).fill().map(() => 
+                        machineType.symbols[Math.floor(Math.random() * machineType.symbols.length)]
+                    );
+                    
+                    let step = 0;
+                    const interval = setInterval(() => {
+                        cell.textContent = spins[step];
+                        step++;
+                        
+                        if (step >= spins.length) {
+                            clearInterval(interval);
+                            resolve(cell.textContent);
+                        }
+                    }, 100);
+                });
+            });
+
+            Promise.all(spinPromises).then(() => {
+                if (checkWinningLines(cells)) {
+                    const winAmount = betAmount * 5;
+                    globalCredits += winAmount;
+                    resultDisplay.textContent = `¡GANASTE! ${winAmount} créditos`;
+                } else {
+                    resultDisplay.textContent = "¡Suerte a la próxima!";
+                }
+
+                globalCreditsDisplay.textContent = `Créditos Totales: ${globalCredits}`;
+                spinButton.disabled = false;
+            });
+        }
+
+        initSlotMachines();
+    </script>
+        <footer>
+            <p>Pon música para acompañar tu juego</p>
+            <audio controls src="Glide with me.mp3" type="audio/mp3"></audiosrc>
+        </footer>      
+</body>
+</html>
